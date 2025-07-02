@@ -27,6 +27,7 @@ public class DepartmentController {
 
         List<DepartmentDTO> departments = departmentService.getAllDepartments();
 
+        System.out.println(departments);
         if (departments.isEmpty()){
             return ResponseEntity.noContent().build(); // 204 No Content
         }
