@@ -6,10 +6,15 @@ import java.util.List;
 
 public interface NewsService {
 
-    public List<NewsDTO> getAllNews();
+    List<NewsDTO> getAllNews();
 
-    public NewsDTO getNewsById(Integer id);
+    NewsDTO getNewsById(Integer id);
 
-    public List<NewsDTO> getNewsByType(String type);
+    List<NewsDTO> getNewsByType(String type);
 
+    NewsDTO saveNews(NewsDTO newsDTO);
+
+    void deleteNews(Integer id);
+
+    NewsDTO updateNews(Integer id, NewsDTO newsToBeUpdated);
 }

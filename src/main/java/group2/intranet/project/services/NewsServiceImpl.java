@@ -46,6 +46,7 @@ public class NewsServiceImpl implements NewsService {
         return newsMapper.toDto(newsById);
     }
 
+
     @Override
     public List<NewsDTO> getNewsByType(String type) {
 
@@ -60,5 +61,48 @@ public class NewsServiceImpl implements NewsService {
         return newsListByType.stream()
                 .map(newsMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public NewsDTO saveNews(NewsDTO newsDTO) {
+
+        try {
+            News NewsEntity = newsMapper.toEntity(newsDTO);
+
+            News savedNews = newsRepository.save(NewsEntity);
+
+            return newsMapper.toDto(savedNews);
+
+        } catch (Exception e) {
+            log.warning("Error occured while saving News");
+            return null;
+        }
+
+
+
+    }
+
+    @Override
+    public NewsDTO updateNews(Integer id, NewsDTO newsToBeUpdated) {
+        try {
+            News existingNews = newsRepository.findById(id).orElse(null);
+
+            newsMapper.updateNewsFromDto(newsToBeUpdated,existingNews);
+
+            assert existingNews != null;
+            News savedNews = newsRepository.save(existingNews);
+
+            return newsMapper.toDto(savedNews);
+        }
+        catch (Exception e){
+            log.info("News to update not found" + e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public void deleteNews(Integer id) {
+
+        newsRepository.deleteById(id);
     }
 }

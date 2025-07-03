@@ -24,8 +24,9 @@ public class News {
     @Column(name = "created_by", nullable = false)
     private Integer createdBy;
 
-    @Column(name = "cover_image")
-    private String coverImage;
+    // Burayı byte[] yaptık
+    @Column(name = "cover_image", columnDefinition = "BYTEA")
+    private byte[] coverImage;
 
     @Column(name = "news_type")
     private String newsType;

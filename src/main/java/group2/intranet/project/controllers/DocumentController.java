@@ -68,18 +68,12 @@ public class DocumentController {
     @PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<DocumentDto> uploadDocument(@ModelAttribute DocumentDto documentDTO){
 
-        System.out.println("File present: " + (documentDTO.getFile() != null));
-        System.out.println("Title: " + documentDTO.getTitle());
-        System.out.println("Department Ids: " + documentDTO.getDepartmentIds());
-
-
         DocumentDto savedDocument = null;
 
         try {
             savedDocument = documentService.saveDocument(documentDTO);
         } catch (Exception e) {
             log.warning(e.getMessage());
-            e.printStackTrace();
             return new ResponseEntity<DocumentDto>(HttpStatus.BAD_REQUEST);
         }
 
