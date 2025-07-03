@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "events")
@@ -51,16 +52,18 @@ public class Event {
         this.createdAt = LocalDateTime.now();
     }
 
-//    // Relationship
-//    @ManyToOne
-//    @JoinColumn(name = "created_by", nullable = false)
-//    private Employee createdBy;
-//
-//    @ManyToMany
-//    @JoinTable(
-//            name = "department_event",
-//            joinColumns = @JoinColumn(name = "department_id"),
-//            inverseJoinColumns = @JoinColumn(name = "event_id")
-//    )
-//    private List<Department> events;
+
+    // Relationship
+
+    @ManyToOne
+    @JoinColumn(name = "created_by", nullable = false)
+    private Employee createdBy;
+
+    @ManyToMany
+    @JoinTable(
+            name = "department_event",
+            joinColumns = @JoinColumn(name = "event_id"), // bu sınıf Event
+            inverseJoinColumns = @JoinColumn(name = "department_id")
+    )
+    private List<Department> events;
 }

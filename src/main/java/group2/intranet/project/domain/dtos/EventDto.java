@@ -34,4 +34,6 @@ public class EventDto {
     private Boolean isApproved;
 
     private LocalDateTime createdAt;
+
+    private Integer createdById;
 }
