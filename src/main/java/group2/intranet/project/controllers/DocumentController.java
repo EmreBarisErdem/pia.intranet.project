@@ -4,7 +4,9 @@ import group2.intranet.project.domain.dtos.DocumentDto;
 import group2.intranet.project.services.DocumentService;
 import jakarta.validation.constraints.Min;
 import lombok.extern.java.Log;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +49,50 @@ public class DocumentController {
         return ResponseEntity.ok(document); //200 OK
     }
 
+    @GetMapping("/download/{id}")
+    public ResponseEntity<byte[]> downloadDocument(@PathVariable Integer id) {
+        DocumentDto documentDto = documentService.getDocumentById(id);
+
+        System.out.println(documentDto.getFileData().length);
+
+        if (documentDto.getFileData() == null) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + documentDto.getTitle() + ".pdf\"")
+                .body(documentDto.getFileData());
+    }
+
+    @PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<DocumentDto> uploadDocument(@ModelAttribute DocumentDto documentDTO){
+
+        System.out.println("File present: " + (documentDTO.getFile() != null));
+        System.out.println("Title: " + documentDTO.getTitle());
+        System.out.println("Department Ids: " + documentDTO.getDepartmentIds());
+
+
+        DocumentDto savedDocument = null;
+
+        try {
+            savedDocument = documentService.saveDocument(documentDTO);
+        } catch (Exception e) {
+            log.warning(e.getMessage());
+            e.printStackTrace();
+            return new ResponseEntity<DocumentDto>(HttpStatus.BAD_REQUEST);
+        }
+
+        if (documentDTO.getFile() == null || documentDTO.getFile().isEmpty()) {
+            log.info("Document request is a Bad One");
+
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedDocument);
+    }
+
+
     @PostMapping
     public ResponseEntity<DocumentDto> createDocument(@RequestBody DocumentDto documentDto) {
         DocumentDto createdDocument = documentService.createDocument(documentDto);
@@ -70,7 +116,6 @@ public class DocumentController {
         }
 
         documentService.deleteDocument(id);
-
         log.info("Deleted document with ID: " + id);
         return ResponseEntity.ok("Document deleted successfully.");
     }

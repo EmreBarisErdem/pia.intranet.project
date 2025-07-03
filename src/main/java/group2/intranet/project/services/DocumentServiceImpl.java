@@ -4,6 +4,7 @@ import group2.intranet.project.domain.dtos.DocumentDto;
 import group2.intranet.project.domain.entities.Document;
 import group2.intranet.project.mappers.DocumentMapper;
 import group2.intranet.project.repositories.DocumentRepository;
+import group2.intranet.project.repositories.EmployeeRepository;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,11 +18,32 @@ import java.util.stream.Collectors;
 public class DocumentServiceImpl implements DocumentService{
 
     private DocumentRepository documentRepository;
+    private EmployeeRepository employeeRepository;
     private DocumentMapper documentMapper;
 
-    public DocumentServiceImpl(DocumentMapper documentMapper, DocumentRepository documentRepository) {
+    public DocumentServiceImpl(DocumentMapper documentMapper, DocumentRepository documentRepository, EmployeeRepository employeeRepository) {
         this.documentMapper = documentMapper;
         this.documentRepository = documentRepository;
+        this.employeeRepository = employeeRepository;
+    }
+
+    @Override
+    public DocumentDto saveDocument(DocumentDto dto){
+
+        try {
+
+            Document documentEntity = documentMapper.toEntity(dto);
+
+            documentEntity.setFileData(dto.getFile().getBytes()); // PDF dosyasını DB'ye koy..
+
+            Document savedDocument = documentRepository.save(documentEntity);
+
+            return documentMapper.toDto(savedDocument);
+
+        } catch (Exception e) {
+            log.warning("Error while saving Document : " + e.getMessage());
+            return null;
+        }
     }
 
     @Override

@@ -22,8 +22,8 @@ public class Document {
 
     private String description;
 
-    @Column(name = "file_url")
-    private String fileUrl;
+    @Column(name = "file_data", columnDefinition = "BYTEA")
+    private byte[] fileData;
 
     @Column(name = "document_type", length = 30)
     private String documentType;

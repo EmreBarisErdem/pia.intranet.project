@@ -2,6 +2,7 @@ package group2.intranet.project.services;
 
 import group2.intranet.project.domain.dtos.DocumentDto;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface DocumentService {
@@ -10,7 +11,9 @@ public interface DocumentService {
 
     DocumentDto getDocumentById(Integer id);
 
-    public DocumentDto createDocument(DocumentDto documentDto);
+    DocumentDto createDocument(DocumentDto documentDto);
 
-    public void deleteDocument(Integer id);
+    void deleteDocument(Integer id);
+
+    DocumentDto saveDocument(DocumentDto dto) throws IOException;
 }
