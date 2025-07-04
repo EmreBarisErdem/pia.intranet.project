@@ -31,7 +31,7 @@ public class AnnouncementController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AnnouncementDTO> getById(@PathVariable("id") @Min(1) Integer id) {
+    public ResponseEntity<AnnouncementDTO> getAnnouncementById(@PathVariable("id") @Min(1) Integer id) {
         AnnouncementDTO dto = announcementService.getById(id);
         if (dto == null) {
             return ResponseEntity.notFound().build(); // 404
@@ -40,13 +40,13 @@ public class AnnouncementController {
     }
 
     @PostMapping
-    public ResponseEntity<AnnouncementDTO> create(@RequestBody @Valid AnnouncementDTO dto) {
+    public ResponseEntity<AnnouncementDTO> createAnnouncement(@RequestBody @Valid AnnouncementDTO dto) {
         AnnouncementDTO created = announcementService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created); // 201 Created
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AnnouncementDTO> update(@PathVariable("id") @Min(1) Integer id,
+    public ResponseEntity<AnnouncementDTO> updateAnnouncement(@PathVariable("id") @Min(1) Integer id,
                                                   @RequestBody @Valid AnnouncementDTO dto) {
         AnnouncementDTO existing = announcementService.getById(id);
         if (existing == null) {
@@ -57,7 +57,7 @@ public class AnnouncementController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") @Min(1) Integer id) {
+    public ResponseEntity<Void> deleteAnnouncement(@PathVariable("id") @Min(1) Integer id) {
         AnnouncementDTO existing = announcementService.getById(id);
         if (existing == null) {
             return ResponseEntity.notFound().build(); // 404
