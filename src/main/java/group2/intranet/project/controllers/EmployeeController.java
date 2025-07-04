@@ -29,7 +29,7 @@ public class EmployeeController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<EmployeeDTO> getById(@PathVariable("id") @Min(value = 1, message = "ID must be greater than or equal to 1") Long id) {
+    public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable("id") @Min(value = 1, message = "ID must be greater than or equal to 1") Long id) {
         EmployeeDTO employee = employeeService.getById(id);
         if (employee == null) {
             return ResponseEntity.noContent().build(); // 204 No Content

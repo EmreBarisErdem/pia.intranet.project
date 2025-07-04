@@ -3,6 +3,8 @@ package group2.intranet.project.domain.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "announcements")
@@ -41,4 +43,7 @@ public class Announcement {
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
+
+    @ManyToMany(mappedBy = "announcements")
+    private List<Department> departments = new ArrayList<>();
 }
