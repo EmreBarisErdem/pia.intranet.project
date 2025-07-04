@@ -2,6 +2,7 @@ package group2.intranet.project.controllers;
 
 import group2.intranet.project.domain.dtos.DocumentDto;
 import group2.intranet.project.services.DocumentService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.extern.java.Log;
 import org.springframework.http.HttpHeaders;
@@ -88,7 +89,7 @@ public class DocumentController {
 
 
     @PostMapping
-    public ResponseEntity<DocumentDto> createDocument(@RequestBody DocumentDto documentDto) {
+    public ResponseEntity<DocumentDto> createDocument(@RequestBody @Valid DocumentDto documentDto) {
         DocumentDto createdDocument = documentService.createDocument(documentDto);
 
         if (createdDocument == null) {

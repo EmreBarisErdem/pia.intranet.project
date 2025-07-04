@@ -2,6 +2,7 @@ package group2.intranet.project.controllers;
 
 import group2.intranet.project.domain.dtos.EventDto;
 import group2.intranet.project.services.EventService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
@@ -45,7 +46,7 @@ public class EventController {
     }
 
     @PostMapping
-    public ResponseEntity<EventDto> createEvent(@RequestBody EventDto eventDto) {
+    public ResponseEntity<EventDto> createEvent(@RequestBody @Valid EventDto eventDto) {
         EventDto createdEvent = eventService.createEvent(eventDto);
 
         if (createdEvent == null) {
@@ -58,7 +59,7 @@ public class EventController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<EventDto> updateEvent(@PathVariable Integer id, @RequestBody EventDto eventToBeUpdated){
+    public ResponseEntity<EventDto> updateEvent(@PathVariable Integer id, @RequestBody @Valid EventDto eventToBeUpdated){
 
         EventDto existingEvent = eventService.getEventById(id);
 
@@ -73,7 +74,6 @@ public class EventController {
             log.info("Event not updated with ID: " + id);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-
         return ResponseEntity.ok(updatedEvent);
 
     }
