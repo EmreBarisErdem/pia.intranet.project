@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "news")
@@ -24,9 +25,6 @@ public class News {
     @Column(name = "created_by", nullable = false)
     private Integer createdBy;
 
-    @Column(name = "cover_image")
-    private String coverImage;
-
     @Column(name = "news_type")
     private String newsType;
 
@@ -37,4 +35,12 @@ public class News {
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
+
+    @ManyToMany
+    @JoinTable(
+            name = "department_news",
+            joinColumns = @JoinColumn(name = "news_id"),
+            inverseJoinColumns = @JoinColumn(name = "department_id")
+    )
+    private List<Department> departments;
 }

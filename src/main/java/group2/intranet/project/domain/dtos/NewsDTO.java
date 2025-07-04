@@ -1,5 +1,6 @@
 package group2.intranet.project.domain.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ public class NewsDTO {
 
     private Integer createdBy;
 
+    @JsonIgnore
     private String coverImage;
 
     private String newsType;

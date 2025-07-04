@@ -33,47 +33,44 @@ public class Department {
         this.createdAt = LocalDateTime.now();
     }
 
+
+    //Relationships
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Employee> employees;
 
-
-    //Relationships
-
-    //will be added after creating all the entities....
-
-    /*
+    @ManyToMany
+    @JoinTable(
+            name = "department_document",
+            joinColumns = @JoinColumn(name = "department_id"),
+            inverseJoinColumns = @JoinColumn(name = "document_id")
+    )
+    private List<Document> documents;
 
     @ManyToMany
     @JoinTable(
-        name = "department_event",
-        joinColumns = @JoinColumn(name = "department_id"),
-        inverseJoinColumns = @JoinColumn(name = "event_id")
+            name = "department_event",
+            joinColumns = @JoinColumn(name = "department_id"),
+            inverseJoinColumns = @JoinColumn(name = "event_id")
     )
     private List<Event> events;
 
     @ManyToMany
     @JoinTable(
-        name = "department_announcement",
-        joinColumns = @JoinColumn(name = "department_id"),
-        inverseJoinColumns = @JoinColumn(name = "announcement_id")
+            name = "department_announcement",
+            joinColumns = @JoinColumn(name = "department_id"),
+            inverseJoinColumns = @JoinColumn(name = "announcement_id")
     )
     private List<Announcement> announcements;
 
     @ManyToMany
     @JoinTable(
-        name = "department_news",
-        joinColumns = @JoinColumn(name = "department_id"),
-        inverseJoinColumns = @JoinColumn(name = "news_id")
+            name = "department_news",
+            joinColumns = @JoinColumn(name = "department_id"),
+            inverseJoinColumns = @JoinColumn(name = "news_id")
     )
     private List<News> newsList;
 
-    @ManyToMany
-    @JoinTable(
-        name = "department_document",
-        joinColumns = @JoinColumn(name = "department_id"),
-        inverseJoinColumns = @JoinColumn(name = "document_id")
-    )
-    private List<Document> documents;
-     */
+
+
 
 }
