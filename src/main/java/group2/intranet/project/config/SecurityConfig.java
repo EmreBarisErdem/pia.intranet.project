@@ -32,8 +32,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/hr/**").hasRole("HR")
+                        .requestMatchers("/events/**").hasAnyRole("HR", "EMPLOYEE")
+                        .requestMatchers("/documents/**").hasAnyRole("HR", "EMPLOYEE")
+                        .requestMatchers("/announcements/**").hasAnyRole("HR", "EMPLOYEE")
                         .requestMatchers("/employee/**").hasAnyRole("EMPLOYEE", "HR")
+                        .requestMatchers("/news/**").hasAnyRole("EMPLOYEE", "HR")
                         //.anyRequest().permitAll()//test için
                         .anyRequest().authenticated()
                 )

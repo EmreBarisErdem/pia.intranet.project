@@ -7,7 +7,9 @@ import jakarta.validation.constraints.Min;
 import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +19,6 @@ import java.util.List;
 @Log
 @RestController
 @RequestMapping(path = "/events")
-@PreAuthorize("hasAnyRole('HR', 'EMPLOYEE')")
 public class EventController {
     private EventService eventService;
 
@@ -47,8 +48,31 @@ public class EventController {
         return ResponseEntity.ok(event); //200 OK
     }
 
+
     @PostMapping
     public ResponseEntity<EventDto> createEvent(@RequestBody @Valid EventDto eventDto) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("BURADAYIIIZZZZZ");
+        String role = auth.getAuthorities().stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElse(null); // "ROLE_HR" veya "ROLE_EMPLOYEE"
+        System.out.println(role + "AKDFRLOGHRKLSDHRTGKSJHLGIE");
+        if (role == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        if (role.equals("ROLE_EMPLOYEE")) {
+            eventDto.setIsApproved(false); // Override ediyoruz
+        }
+
+        // HR olmayan birisi onaylı etkinlik gönderemez
+        if (!role.equals("ROLE_HR") && Boolean.TRUE.equals(eventDto.getIsApproved())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(null); // veya özel bir hata mesajı dönebilirsin
+        }
+
         EventDto createdEvent = eventService.createEvent(eventDto);
 
         if (createdEvent == null) {
@@ -59,6 +83,7 @@ public class EventController {
         log.info("Event created successfully");
         return ResponseEntity.status(HttpStatus.CREATED).body(createdEvent);
     }
+
 
     @PutMapping("{id}")
     public ResponseEntity<EventDto> updateEvent(@PathVariable Integer id, @RequestBody @Valid EventDto eventToBeUpdated){

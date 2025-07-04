@@ -18,6 +18,7 @@ import java.util.List;
 @Log
 @RestController
 @RequestMapping(path = "/news")
+//@PreAuthorize("hasAnyRole('HR', 'EMPLOYEE')")
 public class NewsController {
 
     private NewsService newsService;
@@ -81,13 +82,14 @@ public class NewsController {
                 .body(imageBytes);
     }
 
+//    @PreAuthorize("hasRole('HR')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<NewsDTO> createNews(
           @RequestParam("title") String title,
           @RequestParam("content") String content,
           @RequestParam("createdBy") Integer createdBy,
           @RequestParam("newsType") String newsType,
-          @RequestParam(value = "file", required = false) MultipartFile file)
+          @RequestParam(value = "file") MultipartFile file)
     {
 
         try {
@@ -116,6 +118,7 @@ public class NewsController {
 
     }
 
+//    @PreAuthorize("hasRole('HR')")
     @PutMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<NewsDTO> updateNews(@PathVariable Integer id,
                                               @RequestParam("title") String title,
@@ -145,7 +148,7 @@ public class NewsController {
         }
     }
 
-
+//    @PreAuthorize("hasRole('HR')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteNews(@PathVariable Integer id) {
         NewsDTO existingNews = newsService.getNewsById(id);
