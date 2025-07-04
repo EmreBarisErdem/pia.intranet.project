@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Min;
 import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,7 @@ import java.util.List;
 @Log
 @RestController
 @RequestMapping(path = "/events")
+@PreAuthorize("hasAnyRole('HR', 'EMPLOYEE')")
 public class EventController {
     private EventService eventService;
 

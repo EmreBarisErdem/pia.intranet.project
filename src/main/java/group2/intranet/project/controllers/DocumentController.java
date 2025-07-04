@@ -2,13 +2,13 @@ package group2.intranet.project.controllers;
 
 import group2.intranet.project.domain.dtos.DocumentDto;
 import group2.intranet.project.services.DocumentService;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.extern.java.Log;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -66,41 +66,44 @@ public class DocumentController {
                 .body(documentDto.getFileData());
     }
 
+    @PreAuthorize("hasRole('HR')")
     @PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<DocumentDto> uploadDocument(@ModelAttribute DocumentDto documentDTO){
 
         DocumentDto savedDocument = null;
 
+        if (documentDTO.getFile() == null || documentDTO.getFile().isEmpty()) {
+            log.info("No document was uploaded.");
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         try {
+
             savedDocument = documentService.saveDocument(documentDTO);
+
         } catch (Exception e) {
             log.warning(e.getMessage());
             return new ResponseEntity<DocumentDto>(HttpStatus.BAD_REQUEST);
         }
 
-        if (documentDTO.getFile() == null || documentDTO.getFile().isEmpty()) {
-            log.info("Document request is a Bad One");
-
-            return ResponseEntity.badRequest().build();
-        }
-
         return ResponseEntity.status(HttpStatus.CREATED).body(savedDocument);
     }
 
+//    /// Document without file
+//    @PostMapping
+//    public ResponseEntity<DocumentDto> createDocument(@RequestBody @Valid DocumentDto documentDto) {
+//        DocumentDto createdDocument = documentService.createDocument(documentDto);
+//
+//        if (createdDocument == null) {
+//            log.warning("Document creation failed.");
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+//        }
+//
+//        log.info("Document created successfully");
+//        return ResponseEntity.status(HttpStatus.CREATED).body(createdDocument);
+//    }
 
-    @PostMapping
-    public ResponseEntity<DocumentDto> createDocument(@RequestBody @Valid DocumentDto documentDto) {
-        DocumentDto createdDocument = documentService.createDocument(documentDto);
-
-        if (createdDocument == null) {
-            log.warning("Document creation failed.");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-
-        log.info("Document created successfully");
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdDocument);
-    }
-
+    @PreAuthorize("hasRole('HR')")
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteDocument(@PathVariable Integer id){
         DocumentDto existingDocument = documentService.getDocumentById(id);

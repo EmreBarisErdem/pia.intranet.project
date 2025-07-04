@@ -16,4 +16,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Optional<Employee> findByIdWithManager(@Param("id") Integer id);
 
     List<Employee> findByManagerId(Integer managerId);
+
+    Employee findByEmail(String email);
 }

@@ -4,14 +4,19 @@ import group2.intranet.project.domain.dtos.EmployeeDTO;
 import group2.intranet.project.services.EmployeeService;
 import jakarta.validation.constraints.Min;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/employees")
+@RequestMapping("/employee")
 @Validated
+@PreAuthorize("hasAnyRole('HR', 'EMPLOYEE')")
 public class EmployeeController {
     private final EmployeeService employeeService;
 
