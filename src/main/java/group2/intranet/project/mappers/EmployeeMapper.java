@@ -1,6 +1,7 @@
 package group2.intranet.project.mappers;
 
 import group2.intranet.project.domain.dtos.EmployeeDTO;
+import group2.intranet.project.domain.dtos.OrgEmployeeDTO;
 import group2.intranet.project.domain.entities.Department;
 import group2.intranet.project.domain.entities.Employee;
 import org.mapstruct.*;
@@ -17,6 +18,15 @@ public interface EmployeeMapper {
     @Mapping(target = "department", source = "departmentId", qualifiedByName = "mapToDepartment")
     @Mapping(target = "manager", source = "managerId", qualifiedByName = "mapToManager")
     Employee toEntity(EmployeeDTO dto);
+
+    @Mapping(source = "firstName",           target = "firstName")
+    @Mapping(source = "lastName",            target = "lastName")
+    @Mapping(source = "jobTitle",            target = "jobTitle")
+    @Mapping(source = "department.name",     target = "departmentName")
+    @Mapping(source = "email",               target = "email")
+    @Mapping(source = "phoneNumber",         target = "phoneNumber")
+    @Mapping(target = "reports",             ignore = true)
+    OrgEmployeeDTO toOrgDto(Employee employee);
 
     @Named("mapToDepartment")
     default Department mapToDepartment(Integer departmentId) {
