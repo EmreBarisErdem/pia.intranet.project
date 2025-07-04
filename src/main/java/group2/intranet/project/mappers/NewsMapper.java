@@ -9,6 +9,7 @@ import java.util.Base64;
 
 @Mapper(componentModel = "spring")
 public interface NewsMapper {
+
     NewsDTO toDto(News news);
 
     News toEntity(NewsDTO newsDTO);

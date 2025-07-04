@@ -101,7 +101,7 @@ public class DocumentController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<?> deleteEvent(@PathVariable Integer id){
+    public ResponseEntity<?> deleteDocument(@PathVariable Integer id){
         DocumentDto existingDocument = documentService.getDocumentById(id);
 
         if (existingDocument == null) {

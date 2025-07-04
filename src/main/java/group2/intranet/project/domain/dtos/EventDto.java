@@ -23,8 +23,6 @@ public class EventDto {
 
     private String status;
 
-    private String coverImage;
-
     private LocalDateTime startTime;
 
     private LocalDateTime endTime;

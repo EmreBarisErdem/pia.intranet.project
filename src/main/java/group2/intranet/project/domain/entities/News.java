@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "news")
@@ -24,10 +25,6 @@ public class News {
     @Column(name = "created_by", nullable = false)
     private Integer createdBy;
 
-    // Burayı byte[] yaptık
-    @Column(name = "cover_image", columnDefinition = "BYTEA")
-    private byte[] coverImage;
-
     @Column(name = "news_type")
     private String newsType;
 
@@ -38,4 +35,12 @@ public class News {
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
+
+    @ManyToMany
+    @JoinTable(
+            name = "department_news",
+            joinColumns = @JoinColumn(name = "news_id"),
+            inverseJoinColumns = @JoinColumn(name = "department_id")
+    )
+    private List<Department> departments;
 }
