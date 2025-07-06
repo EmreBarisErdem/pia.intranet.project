@@ -1,5 +1,6 @@
 package group2.intranet.project.services;
 
+import group2.intranet.project.domain.entities.Employee;
 import group2.intranet.project.repositories.EmployeeRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,4 +21,9 @@ public class CustomUserDetailsService implements UserDetailsService {
         return employeeRepository.findByEmail(email);
 
     }
+
+    public Employee getEmployeeByEmail(String email) {
+        return employeeRepository.findByEmail(email);
+    }
+
 }

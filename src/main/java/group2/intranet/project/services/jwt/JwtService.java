@@ -27,11 +27,11 @@ public class JwtService {
     /// "role" claim'ine kullanıcının ilk yetkisini (ROLE_HR, ROLE_EMPLOYEE, vb.) yazar.
     /// 10 saatlik geçerlilik süresi tanımlar.
     /// HS256 algoritması ile imzalar.
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails, Long userId) {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername()) // username (örneğin email) set edilir
                 .claim("role", userDetails.getAuthorities().iterator().next().getAuthority())  // rol eklenir
-
+                .claim("id", userId)
                 .setIssuedAt(new Date())                                                        // oluşturulma zamanı
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 saat
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
@@ -79,6 +79,10 @@ public class JwtService {
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
+    }
+
+    public Long extractUserId(String token) {
+        return extractAllClaims(token).get("id", Long.class);
     }
 
     /// Secret key byte dizisine dönüştürülüp HMAC algoritmasına uygun bir Key nesnesi oluşturulur.

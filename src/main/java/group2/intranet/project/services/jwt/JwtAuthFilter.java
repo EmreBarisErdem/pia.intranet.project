@@ -50,10 +50,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        ///Token'dan Username ve Role bilgilerini çıkar...
+        ///Token'dan Username, Role ve Id bilgilerini çıkar...
         final String token = authHeader.substring(7);
         final String username = jwtService.extractUsername(token);
         final String role = jwtService.extractClaim(token, claims -> claims.get("role", String.class));
+        final Long userId = jwtService.extractClaim(token, claims -> claims.get("id", Long.class)); // ← id çekiyoruz
 
         ///Güvenlik bağlamı boşsa ve kullanıcı geçerliyse → yetkilendirme yapılır ve kullanıcı daha önce authenticate edilmemişse işlem yapılır.
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -66,7 +67,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
 
                 UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(username, null, authorities);
+                        new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
+
+                ///userId'yi isteğe özel attribute olarak ekleyelim
+                authToken.setDetails(userId);
+
 
                 ///Spring Security, sonraki @PreAuthorize, hasRole, hasAuthority gibi kontrollerde bu kimliği kullanır.
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
