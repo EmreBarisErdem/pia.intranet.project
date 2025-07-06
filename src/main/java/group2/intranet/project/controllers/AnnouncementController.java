@@ -40,13 +40,13 @@ public class AnnouncementController {
         return ResponseEntity.ok(dto);
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<AnnouncementDTO> createAnnouncement(@RequestBody @Valid AnnouncementDTO dto) {
         AnnouncementDTO created = announcementService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created); // 201 Created
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<AnnouncementDTO> updateAnnouncement(@PathVariable("id") @Min(1) Integer id,
                                                   @RequestBody @Valid AnnouncementDTO dto) {
         AnnouncementDTO existing = announcementService.getById(id);
@@ -57,7 +57,7 @@ public class AnnouncementController {
         return ResponseEntity.ok(updated); // 200
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteAnnouncement(@PathVariable("id") @Min(1) Integer id) {
         AnnouncementDTO existing = announcementService.getById(id);
         if (existing == null) {
