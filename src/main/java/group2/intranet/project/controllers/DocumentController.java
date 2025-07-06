@@ -54,11 +54,11 @@ public class DocumentController {
     public ResponseEntity<byte[]> downloadDocument(@PathVariable Integer id) {
         DocumentDto documentDto = documentService.getDocumentById(id);
 
-        System.out.println(documentDto.getFileData().length);
-
         if (documentDto.getFileData() == null) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
+
+        System.out.println(documentDto.getFileData().length);
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)

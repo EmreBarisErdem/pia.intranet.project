@@ -43,11 +43,12 @@ public class DepartmentController {
     public ResponseEntity<DepartmentDTO> getDepartmentById(@PathVariable("id") @Min(value = 1,  message = "ID must be greater than or equal to 1") Integer departmentId){
 
         DepartmentDTO department = departmentService.getDepartmentById(departmentId);
-        System.out.println(department.toString());
 
         if(department == null){
-            return ResponseEntity.noContent().build(); // 404 Not Found
+            return ResponseEntity.noContent().build(); // 204 No Content
         }
+        
+        System.out.println(department.toString());
         System.out.println("CHECK GEÇTİ");
 
         return ResponseEntity.ok(department); //200 OK
