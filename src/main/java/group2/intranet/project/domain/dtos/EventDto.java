@@ -3,6 +3,7 @@ package group2.intranet.project.domain.dtos;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -34,4 +35,7 @@ public class EventDto {
     private LocalDateTime createdAt;
 
     private Integer createdById;
+
+    private List<Integer> departmentIds;
+
 }

@@ -1,9 +1,9 @@
 package group2.intranet.project.domain.dtos;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Getter
@@ -19,13 +19,16 @@ public class NewsDTO {
 
     private String content;
 
-    private Integer createdBy;
+    private byte[] cover_image; // for download
 
-    @JsonIgnore
-    private String coverImage;
+    //private MultipartFile file; // for upload
 
     private String newsType;
 
     private LocalDateTime createdAt;
+
+    private Integer createdById;
+
+    private List<Integer> departmentIds;
 
 }

@@ -2,23 +2,22 @@ package group2.intranet.project.controllers;
 
 import group2.intranet.project.domain.dtos.NewsDTO;
 import group2.intranet.project.services.NewsService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.Base64;
 import java.util.List;
 
-
+@Validated
 @Log
 @RestController
-@RequestMapping(path = "/news")
-//@PreAuthorize("hasAnyRole('HR', 'EMPLOYEE')")
+@RequestMapping(path = "/news", method = RequestMethod.POST)
 public class NewsController {
 
     private NewsService newsService;
@@ -40,7 +39,7 @@ public class NewsController {
         return ResponseEntity.ok(newsList); // 200 OK
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<NewsDTO> getNewsById(@PathVariable("id") @Min(value = 1,  message = "ID must be greater than or equal to 1") Integer newsId){
         NewsDTO news = newsService.getNewsById(newsId);
 
@@ -66,42 +65,30 @@ public class NewsController {
     }
 
     @GetMapping("/{id}/image")
-    public ResponseEntity<byte[]> getImage(@PathVariable Integer id) {
+    public ResponseEntity<byte[]> getNewsImageById(@PathVariable Integer id) {
 
         NewsDTO news = newsService.getNewsById(id);
 
-        if (news == null || news.getCoverImage() == null)
+        if (news == null)
             return ResponseEntity.notFound().build();
-
-        byte[] imageBytes = Base64.getDecoder().decode(news.getCoverImage()); // String i byte[] dizisine çeviriyoruz.
 
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_PNG)
                 .contentType(MediaType.IMAGE_JPEG)
                 .contentType(MediaType.IMAGE_GIF)
-                .body(imageBytes);
+                .body(news.getCover_image());
     }
 
-//    @PreAuthorize("hasRole('HR')")
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+
+    @PostMapping(path = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<NewsDTO> createNews(
-          @RequestParam("title") String title,
-          @RequestParam("content") String content,
-          @RequestParam("createdBy") Integer createdBy,
-          @RequestParam("newsType") String newsType,
-          @RequestParam(value = "file") MultipartFile file)
-    {
+            @ModelAttribute @Valid NewsDTO newsDTO,
+            @RequestParam("file") MultipartFile file) {
 
         try {
-            NewsDTO dto = NewsDTO.builder()
-                    .title(title)
-                    .content(content)
-                    .createdBy(createdBy)
-                    .newsType(newsType)
-                    .coverImage(Base64.getEncoder().encodeToString(file.getBytes()))
-                    .build();
+            newsDTO.setCover_image(file.getBytes());
 
-            NewsDTO savedNews = newsService.saveNews(dto);
+            NewsDTO savedNews = newsService.saveNews(newsDTO);
 
             if (savedNews == null){
                 log.info("News could not be saved. Returned dto is null.");
@@ -110,46 +97,50 @@ public class NewsController {
 
             return ResponseEntity.status(HttpStatus.CREATED).body(savedNews);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.warning(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
-
     }
 
-//    @PreAuthorize("hasRole('HR')")
-    @PutMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<NewsDTO> updateNews(@PathVariable Integer id,
-                                              @RequestParam("title") String title,
-                                              @RequestParam("content") String content,
-                                              @RequestParam("newsType") String newsType,
-                                              @RequestParam(value = "file", required = false) MultipartFile file) {
+    @PutMapping(path = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<NewsDTO> updateNews(
+            @PathVariable Integer id,
+            @ModelAttribute @Valid NewsDTO newsDto,
+            @RequestParam("file") MultipartFile file )
+    {
+
+        if (file == null || file.isEmpty()) {
+            log.info("No document was uploaded.");
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         try {
             NewsDTO existingNews = newsService.getNewsById(id);
+
+            newsDto.setCover_image(file.getBytes());
+
             if (existingNews == null) {
-                return ResponseEntity.notFound().build();
+                log.warning("News to be updated not found with ID: " + id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
 
-            existingNews.setTitle(title);
-            existingNews.setContent(content);
-            existingNews.setNewsType(newsType);
+            NewsDTO updatedNews = newsService.updateNews(id, newsDto);
 
-            if (file != null && !file.isEmpty()) {
-                existingNews.setCoverImage(Base64.getEncoder().encodeToString(file.getBytes()));
+            if(updatedNews == null){
+                log.warning("News not updated with ID: " + id);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             }
 
-            NewsDTO updatedNews = newsService.updateNews(id, existingNews);
-            return ResponseEntity.ok(updatedNews);
+            return ResponseEntity.ok().body(updatedNews);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.warning(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-//    @PreAuthorize("hasRole('HR')")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteNews(@PathVariable Integer id) {
         NewsDTO existingNews = newsService.getNewsById(id);
 

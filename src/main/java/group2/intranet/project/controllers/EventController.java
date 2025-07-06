@@ -37,7 +37,7 @@ public class EventController {
         return ResponseEntity.ok(events); // 200 OK
     }
 
-    @GetMapping("{id}")
+    @GetMapping(path = "/{id}")
     public ResponseEntity<EventDto> getEventById(@PathVariable("id") @Min(value = 1,  message = "ID must be greater than or equal to 1") Integer eventId){
         EventDto event = eventService.getEventById(eventId);
 
@@ -48,65 +48,92 @@ public class EventController {
         return ResponseEntity.ok(event); //200 OK
     }
 
+    @PostMapping(path = "/create")
+    public ResponseEntity<EventDto> createEvent(@RequestBody @Valid EventDto dto) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-    @PostMapping
-    public ResponseEntity<EventDto> createEvent(@RequestBody @Valid EventDto eventDto) {
+            String role = auth.getAuthorities().stream()
+                    .findFirst()
+                    .map(GrantedAuthority::getAuthority)
+                    .orElse(null);
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("BURADAYIIIZZZZZ");
-        String role = auth.getAuthorities().stream()
-                .findFirst()
-                .map(GrantedAuthority::getAuthority)
-                .orElse(null); // "ROLE_HR" veya "ROLE_EMPLOYEE"
-        System.out.println(role + "AKDFRLOGHRKLSDHRTGKSJHLGIE");
-        if (role == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            if (role == null) {
+                log.warning("ROLE RETURNED NULL");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            // Sadece HR isApproved gönderebilir
+            if (!"ROLE_HR".equals(role) && Boolean.TRUE.equals(dto.getIsApproved())) {
+                log.warning("EMPLOYEE CAN NOT APPROVE THE EVENT ");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            // Eğer rol HR değilse isApproved false yapılır
+            dto.setIsApproved("ROLE_HR".equals(role));
+
+            EventDto createdEvent = eventService.createEvent(dto);
+            return createdEvent != null
+                    ? ResponseEntity.status(HttpStatus.CREATED).body(createdEvent)
+                    : ResponseEntity.badRequest().build();
+
+        } catch (Exception e) {
+            log.warning("Exception while creating event: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
-        if (role.equals("ROLE_EMPLOYEE")) {
-            eventDto.setIsApproved(false); // Override ediyoruz
-        }
-
-        // HR olmayan birisi onaylı etkinlik gönderemez
-        if (!role.equals("ROLE_HR") && Boolean.TRUE.equals(eventDto.getIsApproved())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(null); // veya özel bir hata mesajı dönebilirsin
-        }
-
-        EventDto createdEvent = eventService.createEvent(eventDto);
-
-        if (createdEvent == null) {
-            log.warning("Event creation failed.");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-
-        log.info("Event created successfully");
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdEvent);
     }
 
 
-    @PutMapping("{id}")
+    @PutMapping(path = "/update/{id}")
     public ResponseEntity<EventDto> updateEvent(@PathVariable Integer id, @RequestBody @Valid EventDto eventToBeUpdated){
 
-        EventDto existingEvent = eventService.getEventById(id);
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (existingEvent == null){
-            log.warning("Event to update not found with ID: " + id);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            String role = auth.getAuthorities().stream()
+                    .findFirst()
+                    .map(GrantedAuthority::getAuthority)
+                    .orElse(null);
+
+            if (role == null) {
+                log.warning("ROLE RETURNED NULL");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            // Eğer rol HR değilse isApproved false yapılır, HR ise true olur.
+            eventToBeUpdated.setIsApproved("ROLE_HR".equals(role));
+
+            // Sadece HR isApproved = true post edebilir. Employee bir şekilde true gönderse bile UNAUTHORIZED alır.
+            if (!"ROLE_HR".equals(role) && Boolean.TRUE.equals(eventToBeUpdated.getIsApproved())) {
+                log.warning("EMPLOYEE CAN NOT APPROVE THE EVENT ");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            EventDto existingEvent = eventService.getEventById(id);
+
+            if (existingEvent == null){
+                log.warning("Event to be updated not found with ID: " + id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+
+            EventDto updatedEvent = eventService.updateEvent(id,eventToBeUpdated);
+
+            if(updatedEvent == null){
+                log.warning("Event not updated with ID: " + id);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+            return ResponseEntity.ok(updatedEvent);
+
+        } catch (Exception e) {
+            log.warning(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
-        EventDto updatedEvent = eventService.updateEvent(id,eventToBeUpdated);
-
-        if(updatedEvent == null){
-            log.info("Event not updated with ID: " + id);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-        return ResponseEntity.ok(updatedEvent);
 
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping(path = "/delete/{id}")
     public ResponseEntity<?> deleteEvent(@PathVariable Integer id){
+
         EventDto existingEvent = eventService.getEventById(id);
 
         if (existingEvent == null) {

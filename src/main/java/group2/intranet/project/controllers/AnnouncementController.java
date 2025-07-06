@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -57,12 +58,12 @@ public class AnnouncementController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAnnouncement(@PathVariable("id") @Min(1) Integer id) {
+    public ResponseEntity<?> deleteAnnouncement(@PathVariable("id") @Min(1) Integer id) {
         AnnouncementDTO existing = announcementService.getById(id);
         if (existing == null) {
             return ResponseEntity.notFound().build(); // 404
         }
         announcementService.delete(id);
-        return ResponseEntity.noContent().build(); // 204
+        return ResponseEntity.ok("Announcement deleted successfully");
     }
 }

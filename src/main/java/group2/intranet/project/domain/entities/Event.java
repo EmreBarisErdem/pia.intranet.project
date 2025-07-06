@@ -30,9 +30,6 @@ public class Event {
 
     private String status;
 
-    @Column(name = "cover_image")
-    private String coverImage;
-
     @Column(name = "start_time")
     private LocalDateTime startTime;
 
@@ -62,8 +59,8 @@ public class Event {
     @ManyToMany
     @JoinTable(
             name = "department_event",
-            joinColumns = @JoinColumn(name = "event_id"), // bu sınıf Event
+            joinColumns = @JoinColumn(name = "event_id"),
             inverseJoinColumns = @JoinColumn(name = "department_id")
     )
-    private List<Department> events;
+    private List<Department> departments;
 }

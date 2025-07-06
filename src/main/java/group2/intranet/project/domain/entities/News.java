@@ -22,11 +22,11 @@ public class News {
 
     private String content;
 
-    @Column(name = "created_by", nullable = false)
-    private Integer createdBy;
-
     @Column(name = "news_type")
     private String newsType;
+
+    @Column(name = "cover_image", columnDefinition = "BYTEA")
+    private byte[] cover_image;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -35,6 +35,12 @@ public class News {
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
+
+    //Relationships
+
+    @ManyToOne
+    @JoinColumn(name = "created_by", nullable = false)
+    private Employee createdBy;
 
     @ManyToMany
     @JoinTable(
