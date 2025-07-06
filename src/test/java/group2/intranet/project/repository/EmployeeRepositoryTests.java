@@ -24,7 +24,6 @@ public class EmployeeRepositoryTests {
     private EmployeeRepository employeeRepository;
     private DepartmentRepository departmentRepository;
     private Department testDepartment;
-    private Employee testEmployee;
 
     String str = "2025-04-08 12:30";
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -47,22 +46,6 @@ public class EmployeeRepositoryTests {
                         .email("test@department.com")
                         .build()
         );
-////        Not now but can be used to test without writing it all over again.
-//        testEmployee = employeeRepository.save(
-//                Employee.builder()
-//                        .email("test@test.com")
-//                        .passwordHash("test")
-//                        .firstName("test")
-//                        .lastName("test")
-//                        .phoneNumber("+905350000000")
-//                        .department(testDepartment)
-//                        .jobTitle("Test Job Title")
-//                        .dateOfJoining(testLocalDate)
-//                        .birthday(testLocalDate)
-//                        .role("EMPLOYEE")
-//                        .createdAt(dateTime)
-//                        .build()
-//        );
     }
 
 
@@ -85,25 +68,7 @@ public class EmployeeRepositoryTests {
 
     @Test
     public void EmployeeRepository_SaveAll_ReturnsSavedEmployee() {
-//        Employee employee = Employee.builder()
-//                .email("test@test.com")
-//                .passwordHash("test")
-//                .firstName("test")
-//                .lastName("test")
-//                .phoneNumber("+905350000000")
-//                .department(testDepartment)
-//                .jobTitle("Test Job Title")
-//                .dateOfJoining(testLocalDate)
-//                .birthday(testLocalDate)
-//                .role("EMPLOYEE")
-//                .createdAt(dateTime)
-//                .build();
-
-//        Employee savedEmployee = employeeRepository.save(employee);
-
-
         Employee savedTestEmployee = createAndSaveTestEmployee(1);
-
 
         Assertions.assertThat(savedTestEmployee).isNotNull();
         Assertions.assertThat(savedTestEmployee.getId()).isGreaterThan(0);
@@ -111,40 +76,8 @@ public class EmployeeRepositoryTests {
 
     @Test
     public void EmployeeRepostory_GetAll_ReturnsMoreThenOneEmployee() {
-//        Employee employee = Employee.builder()
-//                .email("test@test.com")
-//                .passwordHash("test")
-//                .firstName("test")
-//                .lastName("test")
-//                .phoneNumber("+905350000000")
-//                .department(testDepartment)
-//                .jobTitle("Test Job Title")
-//                .dateOfJoining(testLocalDate)
-//                .birthday(testLocalDate)
-//                .role("EMPLOYEE")
-//                .createdAt(dateTime)
-//                .build();
-//
-//        Employee employee2 = Employee.builder()
-//                .email("test2@test.com")
-//                .passwordHash("test")
-//                .firstName("test2")
-//                .lastName("test2")
-//                .phoneNumber("+905352222222")
-//                .department(testDepartment)
-//                .jobTitle("Test Job Title")
-//                .dateOfJoining(testLocalDate)
-//                .birthday(testLocalDate)
-//                .role("HR")
-//                .createdAt(dateTime)
-//                .build();
-
-//        employeeRepository.save(savedTestEmployee);
-//        employeeRepository.save(savedTestEmployee2);
-
-
-        Employee savedTestEmployee = createAndSaveTestEmployee(1);
-        Employee savedTestEmployee2 = createAndSaveTestEmployee(2);
+        createAndSaveTestEmployee(1);
+        createAndSaveTestEmployee(2);
 
         List<Employee> employeeList = employeeRepository.findAll();
 
@@ -154,23 +87,6 @@ public class EmployeeRepositoryTests {
 
     @Test
     public void EmployeeRepository_FindById_ReturnsSavedEmployee() {
-//        Employee employee = Employee.builder()
-//                .email("test@test.com")
-//                .passwordHash("test")
-//                .firstName("test")
-//                .lastName("test")
-//                .phoneNumber("+905350000000")
-//                .department(testDepartment)
-//                .jobTitle("Test Job Title")
-//                .dateOfJoining(testLocalDate)
-//                .birthday(testLocalDate)
-//                .role("EMPLOYEE")
-//                .createdAt(dateTime)
-//                .build();
-//
-//        employeeRepository.save(employee);
-
-
         Employee savedTestEmployee = createAndSaveTestEmployee(1);
 
         Employee employeeReturn = employeeRepository.findById(Long.valueOf(savedTestEmployee.getId())).get();
@@ -180,22 +96,6 @@ public class EmployeeRepositoryTests {
 
     @Test
     public void EmployeeRepository_UpdateEmployee_ReturnEmployee() {
-//        Employee employee = Employee.builder()
-//                .email("test@test.com")
-//                .passwordHash("test")
-//                .firstName("test")
-//                .lastName("test")
-//                .phoneNumber("+905350000000")
-//                .department(testDepartment)
-//                .jobTitle("Test Job Title")
-//                .dateOfJoining(testLocalDate)
-//                .birthday(testLocalDate)
-//                .role("EMPLOYEE")
-//                .createdAt(dateTime)
-//                .build();
-//
-//        employeeRepository.save(employee);
-
         Employee savedTestEmployee = createAndSaveTestEmployee(1);
 
         Employee employeeSave = employeeRepository.findById(Long.valueOf(savedTestEmployee.getId())).get();
@@ -221,22 +121,6 @@ public class EmployeeRepositoryTests {
 
     @Test
     public void EmployeeRepository_EmployeeDelete_ReturnEmployeeIsEmpty() {
-//        Employee employee = Employee.builder()
-//                .email("test@test.com")
-//                .passwordHash("test")
-//                .firstName("test")
-//                .lastName("test")
-//                .phoneNumber("+905350000000")
-//                .department(testDepartment)
-//                .jobTitle("Test Job Title")
-//                .dateOfJoining(testLocalDate)
-//                .birthday(testLocalDate)
-//                .role("EMPLOYEE")
-//                .createdAt(dateTime)
-//                .build();
-//
-//        employeeRepository.save(employee);
-
         Employee savedTestEmployee = createAndSaveTestEmployee(1);
 
         employeeRepository.deleteById(Long.valueOf(savedTestEmployee.getId()));
