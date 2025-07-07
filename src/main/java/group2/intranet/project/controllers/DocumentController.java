@@ -1,6 +1,7 @@
 package group2.intranet.project.controllers;
 
 import group2.intranet.project.domain.dtos.DocumentDto;
+import group2.intranet.project.services.CustomWebAuthenticationDetails;
 import group2.intranet.project.services.DocumentService;
 import jakarta.validation.constraints.Min;
 import lombok.extern.java.Log;
@@ -8,6 +9,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -69,8 +72,6 @@ public class DocumentController {
     @PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<DocumentDto> uploadDocument(@ModelAttribute DocumentDto documentDTO){
 
-        DocumentDto savedDocument = null;
-
         if (documentDTO.getFile() == null || documentDTO.getFile().isEmpty()) {
             log.info("No document was uploaded.");
 
@@ -78,7 +79,13 @@ public class DocumentController {
         }
         try {
 
-            savedDocument = documentService.saveDocument(documentDTO);
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            CustomWebAuthenticationDetails details = (CustomWebAuthenticationDetails) auth.getDetails();
+            Long userId = details.getUserId();
+
+            documentDTO.setUploadedById(Math.toIntExact(userId));
+
+            DocumentDto savedDocument = documentService.saveDocument(documentDTO);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(savedDocument);
 

@@ -42,11 +42,14 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 
     @Override
     public AnnouncementDTO update(Integer id, AnnouncementDTO dto) {
+
         Announcement existing = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Announcement not found with id: " + id));
 
         Announcement updated = mapper.toEntity(dto);
+
         updated.setId(id);
+
         return mapper.toDto(repository.save(updated));
     }
 

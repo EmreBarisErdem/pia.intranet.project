@@ -36,6 +36,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                     /// login authentication is open for all
                         .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/confessions").permitAll()
+                        .requestMatchers("/confessions/submit").permitAll()
+                        .requestMatchers("/confessions/delete/**").hasRole("HR")
                     /// employee endpoint authorizations
                         .requestMatchers("/employee/**").hasAnyRole("HR", "EMPLOYEE")
                     /// departments endpoint authorizations

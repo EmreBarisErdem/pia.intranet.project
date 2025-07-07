@@ -35,7 +35,7 @@ public class NewsController {
             return ResponseEntity.noContent().build(); // 204 No Content
         }
 
-        log.info("News succesfully created!");
+        log.info("News successfully created!");
         return ResponseEntity.ok(newsList); // 200 OK
     }
 

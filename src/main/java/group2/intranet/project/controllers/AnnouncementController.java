@@ -2,10 +2,13 @@ package group2.intranet.project.controllers;
 
 import group2.intranet.project.domain.dtos.AnnouncementDTO;
 import group2.intranet.project.services.AnnouncementService;
+import group2.intranet.project.services.CustomWebAuthenticationDetails;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +45,13 @@ public class AnnouncementController {
 
     @PostMapping("/create")
     public ResponseEntity<AnnouncementDTO> createAnnouncement(@RequestBody @Valid AnnouncementDTO dto) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomWebAuthenticationDetails details = (CustomWebAuthenticationDetails) auth.getDetails();
+        Long userId = details.getUserId();
+
+        dto.setCreatedById(Math.toIntExact(userId));
+
         AnnouncementDTO created = announcementService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created); // 201 Created
     }

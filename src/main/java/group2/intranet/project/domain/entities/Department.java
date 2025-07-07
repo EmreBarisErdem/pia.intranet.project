@@ -70,7 +70,8 @@ public class Department {
     )
     private List<News> newsList;
 
-
+//    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Confession> confessions;
 
 
 }

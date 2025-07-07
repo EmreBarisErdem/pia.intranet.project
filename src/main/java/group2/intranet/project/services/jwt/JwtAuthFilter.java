@@ -1,22 +1,23 @@
 package group2.intranet.project.services.jwt;
 
 import group2.intranet.project.services.CustomUserDetailsService;
+import group2.intranet.project.services.CustomWebAuthenticationDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.java.Log;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
 
-//@Log
+@Log
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
@@ -39,7 +40,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-//        log.info(">>> JwtAuthFilter çalıştı:" +  request.getRequestURI());
+        log.info(">>> JwtAuthFilter çalıştı:" +  request.getRequestURI());
 
         ///İstek Authorization: Bearer <token> başlığıyla gelmiş mi kontrol eder.
         final String authHeader = request.getHeader("Authorization");
@@ -70,17 +71,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
 
                 ///userId'yi isteğe özel attribute olarak ekleyelim
-                authToken.setDetails(userId);
+                //authToken.setDetails();
 
 
                 ///Spring Security, sonraki @PreAuthorize, hasRole, hasAuthority gibi kontrollerde bu kimliği kullanır.
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                CustomWebAuthenticationDetails customDetails = new CustomWebAuthenticationDetails(request, userId);
+                authToken.setDetails(customDetails);
             }
         }
-//        log.info("Authorization Header: " + request.getHeader("Authorization"));
-//        log.info("Request method:" + request.getMethod() + "  " + "Content-Type: " + request.getContentType());
-//        log.info("Token içeriği:" + token);
+        log.info("Authorization Header: " + request.getHeader("Authorization"));
+        log.info("Request method:" + request.getMethod() + "  " + "Content-Type: " + request.getContentType());
+        log.info("Token içeriği:" + token);
 
         filterChain.doFilter(request, response);
 
