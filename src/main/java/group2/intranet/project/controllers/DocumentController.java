@@ -1,7 +1,7 @@
 package group2.intranet.project.controllers;
 
 import group2.intranet.project.domain.dtos.DocumentDto;
-import group2.intranet.project.services.CustomWebAuthenticationDetails;
+import group2.intranet.project.domain.entities.Employee;
 import group2.intranet.project.services.DocumentService;
 import jakarta.validation.constraints.Min;
 import lombok.extern.java.Log;
@@ -80,8 +80,8 @@ public class DocumentController {
         try {
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            CustomWebAuthenticationDetails details = (CustomWebAuthenticationDetails) auth.getDetails();
-            Long userId = details.getUserId();
+            Employee loggedInEmployee = (Employee) auth.getPrincipal();
+            Integer userId = loggedInEmployee.getId();
 
             documentDTO.setUploadedById(Math.toIntExact(userId));
 

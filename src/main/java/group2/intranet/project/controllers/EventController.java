@@ -1,6 +1,7 @@
 package group2.intranet.project.controllers;
 
 import group2.intranet.project.domain.dtos.EventDto;
+import group2.intranet.project.domain.entities.Employee;
 import group2.intranet.project.services.EventService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -58,6 +59,10 @@ public class EventController {
                     .map(GrantedAuthority::getAuthority)
                     .orElse(null);
 
+            Employee loggedInEmployee = (Employee) auth.getPrincipal();
+            Integer id = loggedInEmployee.getId();
+            dto.setCreatedById(Math.toIntExact(id));
+
             if (role == null) {
                 log.warning("ROLE RETURNED NULL");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -94,6 +99,11 @@ public class EventController {
                     .findFirst()
                     .map(GrantedAuthority::getAuthority)
                     .orElse(null);
+
+            Employee loggedInEmployee = (Employee) auth.getPrincipal();
+            id = loggedInEmployee.getId();
+
+            eventToBeUpdated.setCreatedById(Math.toIntExact(id));
 
             if (role == null) {
                 log.warning("ROLE RETURNED NULL");

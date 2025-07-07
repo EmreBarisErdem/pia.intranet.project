@@ -54,7 +54,7 @@ public class ConfessionServiceImpl implements ConfessionService{
 
         Confession updatedConfession = confessionMapper.toEntity(confessionDto);
 
-        updatedConfession.setId(Long.valueOf(id));
+        updatedConfession.setId(id);
 
         return confessionMapper.toDTO(confessionRepository.save(updatedConfession));
     }

@@ -14,11 +14,15 @@ import java.time.LocalDateTime;
 @Builder
 public class ConfessionDto {
 
-    private Long id;
+    private Integer id;
 
     private String nickname;
 
     private String confession;
+
+    private String ageGap;
+
+    private String department;
 
     private LocalDateTime timeOfConfession = LocalDateTime.now();
 

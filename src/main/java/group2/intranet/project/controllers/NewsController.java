@@ -1,6 +1,7 @@
 package group2.intranet.project.controllers;
 
 import group2.intranet.project.domain.dtos.NewsDTO;
+import group2.intranet.project.domain.entities.Employee;
 import group2.intranet.project.services.NewsService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -8,6 +9,9 @@ import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -86,6 +90,13 @@ public class NewsController {
             @RequestParam("file") MultipartFile file) {
 
         try {
+
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+            Employee loggedInEmployee = (Employee) auth.getPrincipal();
+            Integer id = loggedInEmployee.getId();
+
+            newsDTO.setCreatedById(id);
             newsDTO.setCover_image(file.getBytes());
 
             NewsDTO savedNews = newsService.saveNews(newsDTO);
@@ -116,9 +127,20 @@ public class NewsController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+            String role = auth.getAuthorities().stream()
+                    .findFirst()
+                    .map(GrantedAuthority::getAuthority)
+                    .orElse(null);
+
+            Employee loggedInEmployee = (Employee) auth.getPrincipal();
+            id = loggedInEmployee.getId();
+
             NewsDTO existingNews = newsService.getNewsById(id);
 
             newsDto.setCover_image(file.getBytes());
+            newsDto.setCreatedById(id);
 
             if (existingNews == null) {
                 log.warning("News to be updated not found with ID: " + id);

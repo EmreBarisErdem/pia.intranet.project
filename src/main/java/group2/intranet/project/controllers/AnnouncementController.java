@@ -1,8 +1,8 @@
 package group2.intranet.project.controllers;
 
 import group2.intranet.project.domain.dtos.AnnouncementDTO;
+import group2.intranet.project.domain.entities.Employee;
 import group2.intranet.project.services.AnnouncementService;
-import group2.intranet.project.services.CustomWebAuthenticationDetails;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
@@ -46,24 +46,38 @@ public class AnnouncementController {
     @PostMapping("/create")
     public ResponseEntity<AnnouncementDTO> createAnnouncement(@RequestBody @Valid AnnouncementDTO dto) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        CustomWebAuthenticationDetails details = (CustomWebAuthenticationDetails) auth.getDetails();
-        Long userId = details.getUserId();
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            Employee loggedInEmployee = (Employee) auth.getPrincipal();
+            Integer userId = loggedInEmployee.getId();
 
-        dto.setCreatedById(Math.toIntExact(userId));
+            dto.setCreatedById(Math.toIntExact(userId));
 
-        AnnouncementDTO created = announcementService.create(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created); // 201 Created
+            AnnouncementDTO created = announcementService.create(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(created); // 201 Created
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<AnnouncementDTO> updateAnnouncement(@PathVariable("id") @Min(1) Integer id,
                                                   @RequestBody @Valid AnnouncementDTO dto) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Employee loggedInEmployee = (Employee) auth.getPrincipal();
+        id = loggedInEmployee.getId();
+
+        dto.setCreatedById(Math.toIntExact(id));
+
         AnnouncementDTO existing = announcementService.getById(id);
+
         if (existing == null) {
             return ResponseEntity.notFound().build(); // 404
         }
+
         AnnouncementDTO updated = announcementService.update(id, dto);
+
         return ResponseEntity.ok(updated); // 200
     }
 

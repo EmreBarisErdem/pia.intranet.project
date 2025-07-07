@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
+
     private final EmployeeRepository employeeRepository;
 
     public CustomUserDetailsService(EmployeeRepository employeeRepository) {
@@ -25,5 +26,11 @@ public class CustomUserDetailsService implements UserDetailsService {
     public Employee getEmployeeByEmail(String email) {
         return employeeRepository.findByEmail(email);
     }
+    
+    public Long getEmployeeId(String email){
+        return employeeRepository.findByEmail(email).getId().longValue();
+    }
+    
+    
 
 }

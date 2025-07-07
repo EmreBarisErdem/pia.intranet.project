@@ -21,14 +21,21 @@ public class Confession {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Size(max = 50)
     @Column(name = "nickname", nullable = true)
     private String nickname;
 
+    @Size(max = 512)
     @Column(name = "confession", nullable = false)
     private String confession;
+
+    @Column(name = "age_gap" , nullable = false)
+    private String ageGap;
+
+    @Column(name = "department" , nullable = false)
+    private String department;
 
     @Column(name = "time_of_confession")
     private LocalDateTime timeOfConfession = LocalDateTime.now();

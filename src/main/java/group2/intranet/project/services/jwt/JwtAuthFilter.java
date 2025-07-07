@@ -1,7 +1,7 @@
 package group2.intranet.project.services.jwt;
 
+import group2.intranet.project.domain.entities.Employee;
 import group2.intranet.project.services.CustomUserDetailsService;
-import group2.intranet.project.services.CustomWebAuthenticationDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,7 +10,7 @@ import lombok.extern.java.Log;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -60,7 +60,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         ///Güvenlik bağlamı boşsa ve kullanıcı geçerliyse → yetkilendirme yapılır ve kullanıcı daha önce authenticate edilmemişse işlem yapılır.
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            Employee userDetails = (Employee) userDetailsService.loadUserByUsername(username);
+            log.info("Token'daki ID: " + userId);
+            log.info("Veritabanındaki ID: " + userDetails.getId());
 
             ///Token geçerliyse, kullanıcı ve rollerle birlikte Authentication objesi oluşturulur
             if (jwtService.isTokenValid(token, userDetails)) {
@@ -70,13 +72,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
 
-                ///userId'yi isteğe özel attribute olarak ekleyelim
-                //authToken.setDetails();
-
-
                 ///Spring Security, sonraki @PreAuthorize, hasRole, hasAuthority gibi kontrollerde bu kimliği kullanır.
-                CustomWebAuthenticationDetails customDetails = new CustomWebAuthenticationDetails(request, userId);
-                authToken.setDetails(customDetails);
+//                WebAuthenticationDetails customDetails = new WebAuthenticationDetails(request);
+//                authToken.setDetails(customDetails);
+
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
         log.info("Authorization Header: " + request.getHeader("Authorization"));
