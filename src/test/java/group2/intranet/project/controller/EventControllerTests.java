@@ -3,6 +3,7 @@ package group2.intranet.project.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group2.intranet.project.controllers.EventController;
 import group2.intranet.project.domain.dtos.EventDto;
+import group2.intranet.project.domain.entities.Employee;
 import group2.intranet.project.services.EventService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -63,6 +67,22 @@ public class EventControllerTests {
                 .isApproved(false)
                 .createdById(2)
                 .build();
+    }
+
+    private void setupAuthenticationWithUserId(Long userId) {
+        Employee mockEmployee = new Employee();
+        mockEmployee.setId(Math.toIntExact(userId));
+        mockEmployee.setEmail("test@company.com");
+        mockEmployee.setFirstName("Test");
+        mockEmployee.setLastName("User");
+        
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+            mockEmployee, 
+            "password", 
+            List.of(new SimpleGrantedAuthority("ROLE_HR"))
+        );
+        
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     @Test
@@ -130,9 +150,10 @@ public class EventControllerTests {
     }
 
     @Test
-    @WithMockUser(roles = {"HR"})
     public void EventController_CreateEvent_WithHRRole_ReturnsCreatedEvent() throws Exception {
         // Arrange
+        setupAuthenticationWithUserId(1L);
+        
         EventDto newEvent = EventDto.builder()
                 .title("New Event")
                 .description("New event description")

@@ -3,8 +3,8 @@ package group2.intranet.project.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group2.intranet.project.controllers.AnnouncementController;
 import group2.intranet.project.domain.dtos.AnnouncementDTO;
+import group2.intranet.project.domain.entities.Employee;
 import group2.intranet.project.services.AnnouncementService;
-import group2.intranet.project.services.CustomWebAuthenticationDetails;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,15 +70,17 @@ public class AnnouncementControllerTests {
     }
 
     private void setupAuthenticationWithUserId(Long userId) {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        CustomWebAuthenticationDetails details = new CustomWebAuthenticationDetails(request, userId);
+        Employee mockEmployee = new Employee();
+        mockEmployee.setId(Math.toIntExact(userId));
+        mockEmployee.setEmail("test@company.com");
+        mockEmployee.setFirstName("Test");
+        mockEmployee.setLastName("User");
         
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-            "testuser", 
+            mockEmployee, 
             "password", 
             List.of(new SimpleGrantedAuthority("ROLE_HR"))
         );
-        authentication.setDetails(details);
         
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
@@ -229,9 +231,10 @@ public class AnnouncementControllerTests {
     }
 
     @Test
-    @WithMockUser(roles = {"HR"})
     public void AnnouncementController_UpdateAnnouncement_ReturnsUpdatedAnnouncement() throws Exception {
         // Arrange
+        setupAuthenticationWithUserId(1L);
+        
         Integer announcementId = 1;
         AnnouncementDTO updateRequest = AnnouncementDTO.builder()
                 .title("Updated Announcement")
@@ -262,9 +265,10 @@ public class AnnouncementControllerTests {
     }
 
     @Test
-    @WithMockUser(roles = {"HR"})
     public void AnnouncementController_UpdateAnnouncement_ReturnsNotFound_WhenAnnouncementNotExists() throws Exception {
         // Arrange
+        setupAuthenticationWithUserId(1L);
+        
         Integer announcementId = 999;
         AnnouncementDTO updateRequest = AnnouncementDTO.builder()
                 .title("Updated Announcement")

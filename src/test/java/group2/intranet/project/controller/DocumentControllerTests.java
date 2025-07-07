@@ -2,8 +2,8 @@ package group2.intranet.project.controller;
 
 import group2.intranet.project.controllers.DocumentController;
 import group2.intranet.project.domain.dtos.DocumentDto;
+import group2.intranet.project.domain.entities.Employee;
 import group2.intranet.project.services.DocumentService;
-import group2.intranet.project.services.CustomWebAuthenticationDetails;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -82,15 +82,17 @@ public class DocumentControllerTests {
     }
 
     private void setupAuthenticationWithUserId(Long userId) {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        CustomWebAuthenticationDetails details = new CustomWebAuthenticationDetails(request, userId);
+        Employee mockEmployee = new Employee();
+        mockEmployee.setId(Math.toIntExact(userId));
+        mockEmployee.setEmail("test@company.com");
+        mockEmployee.setFirstName("Test");
+        mockEmployee.setLastName("User");
         
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-            "testuser", 
+            mockEmployee, 
             "password", 
             List.of(new SimpleGrantedAuthority("ROLE_HR"))
         );
-        authentication.setDetails(details);
         
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
