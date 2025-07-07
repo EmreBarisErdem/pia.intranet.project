@@ -27,20 +27,32 @@ public class AnnouncementController {
 
     @GetMapping
     public ResponseEntity<List<AnnouncementDTO>> getAll() {
-        List<AnnouncementDTO> list = announcementService.getAll();
-        if (list.isEmpty()) {
-            return ResponseEntity.noContent().build();
+        try {
+            List<AnnouncementDTO> list = announcementService.getAll();
+            if (list.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(list);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<AnnouncementDTO> getAnnouncementById(@PathVariable("id") @Min(1) Integer id) {
-        AnnouncementDTO dto = announcementService.getById(id);
-        if (dto == null) {
-            return ResponseEntity.notFound().build(); // 404
+        try {
+            AnnouncementDTO dto = announcementService.getById(id);
+
+            if (dto == null) {
+                return ResponseEntity.notFound().build(); // 404
+            }
+
+            return ResponseEntity.ok(dto);
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        return ResponseEntity.ok(dto);
     }
 
     @PostMapping("/create")
@@ -54,9 +66,11 @@ public class AnnouncementController {
             dto.setCreatedById(Math.toIntExact(userId));
 
             AnnouncementDTO created = announcementService.create(dto);
+
             return ResponseEntity.status(HttpStatus.CREATED).body(created); // 201 Created
+
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -64,30 +78,38 @@ public class AnnouncementController {
     public ResponseEntity<AnnouncementDTO> updateAnnouncement(@PathVariable("id") @Min(1) Integer id,
                                                   @RequestBody @Valid AnnouncementDTO dto) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Employee loggedInEmployee = (Employee) auth.getPrincipal();
-        id = loggedInEmployee.getId();
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            Employee loggedInEmployee = (Employee) auth.getPrincipal();
+            id = loggedInEmployee.getId();
 
-        dto.setCreatedById(Math.toIntExact(id));
+            dto.setCreatedById(Math.toIntExact(id));
 
-        AnnouncementDTO existing = announcementService.getById(id);
+            AnnouncementDTO existing = announcementService.getById(id);
 
-        if (existing == null) {
-            return ResponseEntity.notFound().build(); // 404
+            if (existing == null) {
+                return ResponseEntity.notFound().build(); // 404
+            }
+
+            AnnouncementDTO updated = announcementService.update(id, dto);
+
+            return ResponseEntity.ok(updated); // 200
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
-        AnnouncementDTO updated = announcementService.update(id, dto);
-
-        return ResponseEntity.ok(updated); // 200
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteAnnouncement(@PathVariable("id") @Min(1) Integer id) {
-        AnnouncementDTO existing = announcementService.getById(id);
-        if (existing == null) {
-            return ResponseEntity.notFound().build(); // 404
+        try {
+            AnnouncementDTO existing = announcementService.getById(id);
+            if (existing == null) {
+                return ResponseEntity.notFound().build(); // 404
+            }
+            announcementService.delete(id);
+            return ResponseEntity.ok("Announcement deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        announcementService.delete(id);
-        return ResponseEntity.ok("Announcement deleted successfully");
     }
 }

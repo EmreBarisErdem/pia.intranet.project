@@ -4,7 +4,6 @@ import group2.intranet.project.domain.dtos.DepartmentDTO;
 import group2.intranet.project.services.DepartmentService;
 import jakarta.validation.constraints.Min;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +15,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/departments")
 @Validated
-@PreAuthorize("hasAnyRole('HR', 'EMPLOYEE')")
 public class DepartmentController {
     private final DepartmentService departmentService;
 
@@ -28,7 +26,7 @@ public class DepartmentController {
     public ResponseEntity<List<DepartmentDTO>> getAll() {
 
         List<DepartmentDTO> departments = departmentService.getAllDepartments();
-        System.out.println(departments.toString());
+
         if (departments.isEmpty()){
             return ResponseEntity.noContent().build(); // 204 No Content
         }
@@ -47,9 +45,6 @@ public class DepartmentController {
         if(department == null){
             return ResponseEntity.noContent().build(); // 204 No Content
         }
-        
-        System.out.println(department.toString());
-        System.out.println("CHECK GEÇTİ");
 
         return ResponseEntity.ok(department); //200 OK
     }
