@@ -13,8 +13,10 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedOrigins(
                     "http://localhost:8081",  // React dev server
                     "http://localhost:3000",  // Vite default port
+                    "http://localhost:3001",  // Vite default port
                     "http://127.0.0.1:8081", // Alternatif localhost
-                    "http://127.0.0.1:3000"  // Alternatif localhost
+                    "http://127.0.0.1:3000",  // Alternatif localhost
+                    "http://127.0.0.1:3001"  // Alternatif localhost
                 )
                 .allowedMethods(
                     "GET", 
