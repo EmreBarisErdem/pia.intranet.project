@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import group2.intranet.project.controllers.AnnouncementController;
 import group2.intranet.project.domain.dtos.AnnouncementDTO;
 import group2.intranet.project.services.AnnouncementService;
+import group2.intranet.project.services.CustomWebAuthenticationDetails;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -62,6 +67,20 @@ public class AnnouncementControllerTests {
                 .createdById(2)
                 .createdByName("Jane Manager")
                 .build();
+    }
+
+    private void setupAuthenticationWithUserId(Long userId) {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        CustomWebAuthenticationDetails details = new CustomWebAuthenticationDetails(request, userId);
+        
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+            "testuser", 
+            "password", 
+            List.of(new SimpleGrantedAuthority("ROLE_HR"))
+        );
+        authentication.setDetails(details);
+        
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     @Test
@@ -148,9 +167,10 @@ public class AnnouncementControllerTests {
     }
 
     @Test
-    @WithMockUser(roles = {"HR"})
     public void AnnouncementController_CreateAnnouncement_ReturnsCreatedAnnouncement() throws Exception {
         // Arrange
+        setupAuthenticationWithUserId(1L);
+        
         AnnouncementDTO newAnnouncement = AnnouncementDTO.builder()
                 .title("New Announcement")
                 .content("This is a new announcement.")
@@ -180,9 +200,10 @@ public class AnnouncementControllerTests {
     }
 
     @Test
-    @WithMockUser(roles = {"HR"})
     public void AnnouncementController_CreateAnnouncement_ReturnsCreatedAnnouncement_WhenTitleIsNull() throws Exception {
         // Arrange
+        setupAuthenticationWithUserId(1L);
+        
         AnnouncementDTO announcementWithNullTitle = AnnouncementDTO.builder()
                 .content("Content without title")
                 .build();

@@ -3,6 +3,7 @@ package group2.intranet.project.controller;
 import group2.intranet.project.controllers.DocumentController;
 import group2.intranet.project.domain.dtos.DocumentDto;
 import group2.intranet.project.services.DocumentService;
+import group2.intranet.project.services.CustomWebAuthenticationDetails;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,11 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -74,6 +79,20 @@ public class DocumentControllerTests {
                 .fileData("Test DOCX content 2".getBytes())
                 .departmentIds(List.of(1))
                 .build();
+    }
+
+    private void setupAuthenticationWithUserId(Long userId) {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        CustomWebAuthenticationDetails details = new CustomWebAuthenticationDetails(request, userId);
+        
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+            "testuser", 
+            "password", 
+            List.of(new SimpleGrantedAuthority("ROLE_HR"))
+        );
+        authentication.setDetails(details);
+        
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     @Test
@@ -193,9 +212,10 @@ public class DocumentControllerTests {
     }
 
     @Test
-    @WithMockUser(roles = {"HR"})
     public void DocumentController_UploadDocument_ReturnsCreatedDocument() throws Exception {
         // Arrange
+        setupAuthenticationWithUserId(1L);
+        
         MockMultipartFile file = new MockMultipartFile(
                 "file",
                 "test.pdf",
