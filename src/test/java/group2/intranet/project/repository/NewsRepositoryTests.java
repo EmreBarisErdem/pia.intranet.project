@@ -1,8 +1,13 @@
 package group2.intranet.project.repository;
 
 import group2.intranet.project.domain.entities.News;
+import group2.intranet.project.domain.entities.Employee;
+import group2.intranet.project.domain.entities.Department;
 import group2.intranet.project.repositories.NewsRepository;
+import group2.intranet.project.repositories.EmployeeRepository;
+import group2.intranet.project.repositories.DepartmentRepository;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -18,15 +23,44 @@ import java.util.Optional;
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 public class NewsRepositoryTests {
     private final NewsRepository newsRepository;
+    private final EmployeeRepository employeeRepository;
+    private final DepartmentRepository departmentRepository;
 
     @Autowired
-    public NewsRepositoryTests(NewsRepository newsRepository) {
+    public NewsRepositoryTests(NewsRepository newsRepository, EmployeeRepository employeeRepository, DepartmentRepository departmentRepository) {
         this.newsRepository = newsRepository;
+        this.employeeRepository = employeeRepository;
+        this.departmentRepository = departmentRepository;
     }
 
     String str = "2025-04-08 12:30";
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     LocalDateTime dateTime = LocalDateTime.parse(str, formatter);
+    
+    private Employee testEmployee;
+    private Department testDepartment;
+
+    @BeforeEach
+    public void setUp() {
+        // Create test department first
+        testDepartment = Department.builder()
+                .name("Test Department")
+                .email("test@company.com")
+                .location("Test Location")
+                .build();
+        testDepartment = departmentRepository.save(testDepartment);
+
+        // Create test employee
+        testEmployee = Employee.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@company.com")
+                .department(testDepartment)
+                .role("EMPLOYEE")
+                .passwordHash("hashedpassword")
+                .build();
+        testEmployee = employeeRepository.save(testEmployee);
+    }
 
 
     @Test
@@ -34,8 +68,8 @@ public class NewsRepositoryTests {
         News news = News.builder()
                 .title("title")
                 .content("content")
-                .createdBy(1)
                 .newsType("type")
+                .createdBy(testEmployee)
                 .createdAt(dateTime)
                 .build();
 
@@ -50,16 +84,16 @@ public class NewsRepositoryTests {
         News news = News.builder()
                 .title("title")
                 .content("content")
-                .createdBy(1)
                 .newsType("type")
+                .createdBy(testEmployee)
                 .createdAt(dateTime)
                 .build();
 
         News news2 = News.builder()
                 .title("title")
                 .content("content")
-                .createdBy(1)
                 .newsType("type")
+                .createdBy(testEmployee)
                 .createdAt(dateTime)
                 .build();
 
@@ -77,8 +111,8 @@ public class NewsRepositoryTests {
         News news = News.builder()
                 .title("title")
                 .content("content")
-                .createdBy(1)
                 .newsType("type")
+                .createdBy(testEmployee)
                 .createdAt(dateTime)
                 .build();
 
@@ -94,8 +128,8 @@ public class NewsRepositoryTests {
         News news = News.builder()
                 .title("title")
                 .content("content")
-                .createdBy(1)
                 .newsType("type")
+                .createdBy(testEmployee)
                 .createdAt(dateTime)
                 .build();
 
@@ -105,7 +139,6 @@ public class NewsRepositoryTests {
 
         newsSave.setTitle("test");
         newsSave.setContent("test");
-        newsSave.setCreatedBy(2);
         newsSave.setNewsType("test");
         newsSave.setCreatedAt(dateTime);
 
@@ -123,8 +156,8 @@ public class NewsRepositoryTests {
         News news = News.builder()
                 .title("title")
                 .content("content")
-                .createdBy(1)
                 .newsType("type")
+                .createdBy(testEmployee)
                 .createdAt(dateTime)
                 .build();
 

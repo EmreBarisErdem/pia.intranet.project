@@ -51,7 +51,7 @@ public class EventServiceTests {
         // Use the real MapStruct mapper
         eventMapper = Mappers.getMapper(EventMapper.class);
         // Manually inject dependencies
-        eventService = new EventServiceImpl(eventRepository, eventMapper);
+        eventService = new EventServiceImpl(departmentRepository, employeeRepository, eventMapper, eventRepository);
     }
 
     @Test
@@ -108,10 +108,13 @@ public class EventServiceTests {
                 .location("Test Location")
                 .isApproved(true)
                 .createdById(testEmployee.getId())
+                .departmentIds(List.of(testDepartment.getId()))
                 .build();
 
-        // Mocks - Only mock the repository, use real mapper
-        when(eventRepository.save(Mockito.any(Event.class))).thenReturn(event);
+        // Mocks - Mock all repository calls
+        when(employeeRepository.findById(Long.valueOf(testEmployee.getId()))).thenReturn(Optional.of(testEmployee));
+        when(departmentRepository.findAllById(List.of(testDepartment.getId()))).thenReturn(List.of(testDepartment));
+        when(eventRepository.saveAndFlush(Mockito.any(Event.class))).thenReturn(event);
 
         // Act
         EventDto savedEvent = eventService.createEvent(eventDto);
@@ -211,12 +214,28 @@ public class EventServiceTests {
                 .location("Original Location")
                 .build();
 
+        // Create test employee and department for the update
+        Department testDepartment = Department.builder()
+                .id(1)
+                .name("Test Department")
+                .build();
+
+        Employee testEmployee = Employee.builder()
+                .id(100)
+                .email("test@test.com")
+                .firstName("test")
+                .lastName("test")
+                .department(testDepartment)
+                .build();
+
         EventDto updateDto = EventDto.builder()
                 .title("Updated Title")
                 .description("Updated Description")
                 .eventType("Workshop")
                 .maxParticipants(100)
                 .location("Updated Location")
+                .createdById(testEmployee.getId())
+                .departmentIds(List.of(testDepartment.getId()))
                 .build();
 
         Event updatedEvent = Event.builder()
@@ -226,11 +245,15 @@ public class EventServiceTests {
                 .eventType("Workshop")
                 .maxParticipants(100)
                 .location("Updated Location")
+                .createdBy(testEmployee)
+                .departments(List.of(testDepartment))
                 .build();
 
         // Mocks
         when(eventRepository.findById(eventId)).thenReturn(Optional.of(existingEvent));
-        when(eventRepository.save(Mockito.any(Event.class))).thenReturn(updatedEvent);
+        when(employeeRepository.findById(Long.valueOf(testEmployee.getId()))).thenReturn(Optional.of(testEmployee));
+        when(departmentRepository.findAllById(List.of(testDepartment.getId()))).thenReturn(List.of(testDepartment));
+        when(eventRepository.saveAndFlush(Mockito.any(Event.class))).thenReturn(updatedEvent);
 
         // Act
         EventDto result = eventService.updateEvent(eventId, updateDto);

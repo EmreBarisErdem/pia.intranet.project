@@ -285,7 +285,7 @@ public class DocumentControllerTests {
         doNothing().when(documentService).deleteDocument(documentId);
 
         // Act & Assert
-        mockMvc.perform(delete("/documents/{id}", documentId))
+        mockMvc.perform(delete("/documents/delete/{id}", documentId))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Document deleted successfully."));
     }
@@ -298,7 +298,7 @@ public class DocumentControllerTests {
         when(documentService.getDocumentById(documentId)).thenReturn(null);
 
         // Act & Assert
-        mockMvc.perform(delete("/documents/{id}", documentId))
+        mockMvc.perform(delete("/documents/delete/{id}", documentId))
                 .andExpect(status().isNotFound());
     }
 
@@ -306,7 +306,7 @@ public class DocumentControllerTests {
     @WithMockUser(roles = {"EMPLOYEE"})
     public void DocumentController_DeleteDocument_ReturnsForbidden_WhenNotHR() throws Exception {
         // Act & Assert
-        mockMvc.perform(delete("/documents/{id}", 1))
+        mockMvc.perform(delete("/documents/delete/{id}", 1))
                 .andExpect(status().isForbidden());
     }
 

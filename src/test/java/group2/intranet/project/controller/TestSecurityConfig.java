@@ -29,9 +29,18 @@ public class TestSecurityConfig {
         return http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/documents/**").hasAnyRole("HR", "EMPLOYEE")
-                .requestMatchers("/events/**").hasAnyRole("HR", "EMPLOYEE")
-                .requestMatchers("/announcements/**").hasAnyRole("HR", "EMPLOYEE")
+                .requestMatchers("/documents").hasAnyRole("HR", "EMPLOYEE")
+                .requestMatchers("/documents/download/**").hasAnyRole("HR", "EMPLOYEE")
+                .requestMatchers("/documents/delete/**").hasRole("HR")
+                .requestMatchers("/documents/upload").hasRole("HR")
+                .requestMatchers("/events").hasAnyRole("HR", "EMPLOYEE")
+                .requestMatchers("/events/create").hasAnyRole("HR", "EMPLOYEE")
+                .requestMatchers("/events/update/**").hasRole("HR")
+                .requestMatchers("/events/delete/**").hasRole("HR")
+                .requestMatchers("/announcements").hasAnyRole("HR", "EMPLOYEE")
+                .requestMatchers("/announcements/create/**").hasRole("HR")
+                .requestMatchers("/announcements/update/**").hasRole("HR")
+                .requestMatchers("/announcements/delete/**").hasRole("HR")
                 .anyRequest().authenticated())
             .build();
     }

@@ -169,7 +169,7 @@ public class AnnouncementControllerTests {
         when(announcementService.create(any(AnnouncementDTO.class))).thenReturn(createdAnnouncement);
 
         // Act & Assert
-        mockMvc.perform(post("/announcements")
+        mockMvc.perform(post("/announcements/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newAnnouncement)))
                 .andExpect(status().isCreated())
@@ -198,7 +198,7 @@ public class AnnouncementControllerTests {
         when(announcementService.create(any(AnnouncementDTO.class))).thenReturn(createdAnnouncement);
 
         // Act & Assert
-        mockMvc.perform(post("/announcements")
+        mockMvc.perform(post("/announcements/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(announcementWithNullTitle)))
                 .andExpect(status().isCreated())
@@ -230,7 +230,7 @@ public class AnnouncementControllerTests {
         when(announcementService.update(eq(announcementId), any(AnnouncementDTO.class))).thenReturn(updatedAnnouncement);
 
         // Act & Assert
-        mockMvc.perform(put("/announcements/{id}", announcementId)
+        mockMvc.perform(put("/announcements/update/{id}", announcementId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isOk())
@@ -253,7 +253,7 @@ public class AnnouncementControllerTests {
         when(announcementService.getById(announcementId)).thenReturn(null);
 
         // Act & Assert
-        mockMvc.perform(put("/announcements/{id}", announcementId)
+        mockMvc.perform(put("/announcements/update/{id}", announcementId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isNotFound());
@@ -268,8 +268,8 @@ public class AnnouncementControllerTests {
         doNothing().when(announcementService).delete(announcementId);
 
         // Act & Assert
-        mockMvc.perform(delete("/announcements/{id}", announcementId))
-                .andExpect(status().isNoContent());
+        mockMvc.perform(delete("/announcements/delete/{id}", announcementId))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -280,7 +280,7 @@ public class AnnouncementControllerTests {
         when(announcementService.getById(announcementId)).thenReturn(null);
 
         // Act & Assert
-        mockMvc.perform(delete("/announcements/{id}", announcementId))
+        mockMvc.perform(delete("/announcements/delete/{id}", announcementId))
                 .andExpect(status().isNotFound());
     }
 

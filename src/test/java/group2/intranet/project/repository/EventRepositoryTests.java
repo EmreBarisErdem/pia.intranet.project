@@ -75,7 +75,6 @@ public class EventRepositoryTests {
                 .eventType("Meeting")
                 .maxParticipants(50)
                 .status("Active")
-                .coverImage("test-image.jpg")
                 .startTime(dateTime.plusHours(1))
                 .endTime(dateTime.plusHours(3))
                 .location("Test Location " + number)

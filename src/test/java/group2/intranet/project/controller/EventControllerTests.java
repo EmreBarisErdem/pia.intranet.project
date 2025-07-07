@@ -157,7 +157,7 @@ public class EventControllerTests {
         when(eventService.createEvent(any(EventDto.class))).thenReturn(createdEvent);
 
         // Act & Assert
-        mockMvc.perform(post("/events")
+        mockMvc.perform(post("/events/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newEvent)))
                 .andExpect(status().isCreated())
@@ -184,7 +184,7 @@ public class EventControllerTests {
                 .build();
 
         // Act & Assert
-        mockMvc.perform(post("/events")
+        mockMvc.perform(post("/events/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newEvent)))
                 .andExpect(status().isForbidden());
