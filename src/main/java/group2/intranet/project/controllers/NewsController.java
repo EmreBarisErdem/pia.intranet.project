@@ -3,7 +3,6 @@ package group2.intranet.project.controllers;
 import group2.intranet.project.domain.dtos.NewsDTO;
 import group2.intranet.project.domain.entities.Employee;
 import group2.intranet.project.services.NewsService;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
@@ -12,13 +11,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@Validated
+
 @Log
 @RestController
 @RequestMapping(path = "/news", method = RequestMethod.POST)
@@ -34,10 +32,10 @@ public class NewsController {
     public ResponseEntity<List<NewsDTO>> getAll(){
         List<NewsDTO> newsList = newsService.getAllNews();
 
-        if (newsList.isEmpty()){
-            log.warning("News Not Found. News are empty!");
-            return ResponseEntity.noContent().build(); // 204 No Content
-        }
+//        if (newsList.isEmpty()){
+//            log.warning("News Not Found. News are empty!");
+//            return ResponseEntity.noContent().build(); // 204 No Content
+//        }
 
         log.info("News successfully created!");
         return ResponseEntity.ok(newsList); // 200 OK
@@ -84,10 +82,10 @@ public class NewsController {
     }
 
 
-    @PostMapping(path = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(path = "/create")
     public ResponseEntity<NewsDTO> createNews(
-            @ModelAttribute @Valid NewsDTO newsDTO,
-            @RequestParam("file") MultipartFile file) {
+         @ModelAttribute NewsDTO newsDTO,
+            MultipartFile file) {
 
         try {
 
@@ -98,6 +96,8 @@ public class NewsController {
 
             newsDTO.setCreatedById(id);
             newsDTO.setCover_image(file.getBytes());
+
+
 
             NewsDTO savedNews = newsService.saveNews(newsDTO);
 
@@ -114,11 +114,11 @@ public class NewsController {
         }
     }
 
-    @PutMapping(path = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(path = "/update/{id}")
     public ResponseEntity<NewsDTO> updateNews(
             @PathVariable Integer id,
-            @ModelAttribute @Valid NewsDTO newsDto,
-            @RequestParam("file") MultipartFile file )
+            @ModelAttribute NewsDTO newsDto,
+            MultipartFile file )
     {
 
         if (file == null || file.isEmpty()) {
@@ -134,8 +134,9 @@ public class NewsController {
                     .map(GrantedAuthority::getAuthority)
                     .orElse(null);
 
+
             Employee loggedInEmployee = (Employee) auth.getPrincipal();
-            id = loggedInEmployee.getId();
+            newsDto.setCreatedById(loggedInEmployee.getId());
 
             NewsDTO existingNews = newsService.getNewsById(id);
 

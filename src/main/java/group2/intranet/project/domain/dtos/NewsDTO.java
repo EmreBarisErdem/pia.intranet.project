@@ -1,5 +1,6 @@
 package group2.intranet.project.domain.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -12,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class NewsDTO {
+
 
     private Integer id;
 
@@ -29,6 +31,7 @@ public class NewsDTO {
 
     private Integer createdById;
 
+    @JsonIgnore
     private List<Integer> departmentIds;
 
 }

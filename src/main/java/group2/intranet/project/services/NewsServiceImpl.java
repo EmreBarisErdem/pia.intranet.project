@@ -1,7 +1,6 @@
 package group2.intranet.project.services;
 
 import group2.intranet.project.domain.dtos.NewsDTO;
-import group2.intranet.project.domain.entities.Department;
 import group2.intranet.project.domain.entities.Employee;
 import group2.intranet.project.domain.entities.News;
 import group2.intranet.project.mappers.NewsMapper;
@@ -83,9 +82,9 @@ public class NewsServiceImpl implements NewsService {
 
             newsEntity.setCreatedBy(creator);
 
-            List<Department> newsDepartments = departmentRepository.findAllById(newsDTO.getDepartmentIds());
-
-            newsEntity.setDepartments(newsDepartments);
+//            List<Department> newsDepartments = departmentRepository.findAllById(newsDTO.getDepartmentIds());
+//
+//            newsEntity.setDepartments(newsDepartments);
 
 
             News savedNews = newsRepository.saveAndFlush(newsEntity);
@@ -115,9 +114,9 @@ public class NewsServiceImpl implements NewsService {
 
             existingNews.setCreatedBy(creator);
 
-            List<Department> newsDepartments = departmentRepository.findAllById(newsToBeUpdated.getDepartmentIds());
-
-            existingNews.setDepartments(newsDepartments);
+//            List<Department> newsDepartments = departmentRepository.findAllById(newsToBeUpdated.getDepartmentIds());
+//
+//            existingNews.setDepartments(newsDepartments);
 
             News savedNews = newsRepository.saveAndFlush(existingNews);
 
