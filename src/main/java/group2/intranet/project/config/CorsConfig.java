@@ -28,7 +28,7 @@ public class CorsConfig implements WebMvcConfigurer {
                     "HEAD"
                 )
                 .allowedHeaders("*") // Tüm header'lara izin ver
-                .allowCredentials(true) // Cookie ve authentication için
-                .maxAge(3600); // Pre-flight request cache süresi (1 saat)
+                .allowCredentials(true); // Cookie ve authentication için
+                //.maxAge(3600); // Pre-flight request cache süresi (1 saat)
     }
 }

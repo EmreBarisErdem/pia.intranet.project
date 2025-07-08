@@ -36,7 +36,7 @@ public class DocumentController {
             log.info("Document not found");
             return ResponseEntity.noContent().build(); // 204 No Content
         }
-
+        log.info("Documanlar Gönderildi");
         return ResponseEntity.ok(docs); // 200 OK
     }
 

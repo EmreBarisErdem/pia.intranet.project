@@ -20,6 +20,7 @@ import java.util.List;
 @Log
 @RestController
 @RequestMapping(path = "/events")
+@CrossOrigin
 public class EventController {
     private EventService eventService;
 
@@ -49,6 +50,7 @@ public class EventController {
         return ResponseEntity.ok(event); //200 OK
     }
 
+    @CrossOrigin(origins = "http://localhost:8081")
     @PostMapping(path = "/create")
     public ResponseEntity<EventDto> createEvent(@RequestBody @Valid EventDto dto) {
         try {
@@ -101,9 +103,7 @@ public class EventController {
                     .orElse(null);
 
             Employee loggedInEmployee = (Employee) auth.getPrincipal();
-            id = loggedInEmployee.getId();
-
-            eventToBeUpdated.setCreatedById(Math.toIntExact(id));
+            eventToBeUpdated.setCreatedById(loggedInEmployee.getId());
 
             if (role == null) {
                 log.warning("ROLE RETURNED NULL");

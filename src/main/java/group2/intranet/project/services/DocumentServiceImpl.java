@@ -76,7 +76,7 @@ public class DocumentServiceImpl implements DocumentService{
             return documentMapper.toDto(result);
 
         } catch (Exception e) {
-            log.info("Error while creating event : Error Message" + e.getMessage());
+            log.info("Error while creating document : Error Message" + e.getMessage());
             return null;
         }
     }

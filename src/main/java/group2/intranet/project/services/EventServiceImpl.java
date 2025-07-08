@@ -1,7 +1,6 @@
 package group2.intranet.project.services;
 
 import group2.intranet.project.domain.dtos.EventDto;
-import group2.intranet.project.domain.entities.Department;
 import group2.intranet.project.domain.entities.Employee;
 import group2.intranet.project.domain.entities.Event;
 import group2.intranet.project.mappers.EventMapper;
@@ -63,13 +62,7 @@ public class EventServiceImpl implements EventService {
 
             eventEntity.setCreatedBy(creator);
 
-            List<Department> eventDepartments = departmentRepository.findAllById(eventDto.getDepartmentIds());
-
-            // 2. Departmentları set et ve tekrar kaydet
-            eventEntity.setDepartments(eventDepartments);
-
-            // 1. Event'i kaydet (Hep creator hem de departmanları ile
-
+            // 1. Event'i kaydet
             Event savedEventEntity = eventRepository.saveAndFlush(eventEntity);
 
             return eventMapper.toDTO(savedEventEntity);
@@ -96,11 +89,6 @@ public class EventServiceImpl implements EventService {
                     .orElse(null);
 
             existingEvent.setCreatedBy(creator);
-
-            List<Department> eventDepartments = departmentRepository.findAllById(updatedEvent.getDepartmentIds());
-            // 2. Departmentları set et ve tekrar kaydet
-            existingEvent.setDepartments(eventDepartments);
-
 
             Event savedEvent = eventRepository.saveAndFlush(existingEvent);
 

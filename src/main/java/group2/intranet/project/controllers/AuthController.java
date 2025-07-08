@@ -59,7 +59,7 @@ public class AuthController {
 
             String token = jwtService.generateToken(userDetails, Long.valueOf(employee.getId())); //Id'yi de token'a ekledik
 
-            response = new LoginResponseDto(token, employee.getId(), employee.getEmail(), employee.getRole(), employee.getFirstName(), employee.getLastName());
+            response = new LoginResponseDto(token, employee.getId(), employee.getEmail(), employee.getRole(),employee.getFirstName(),employee.getLastName());
 
             return ResponseEntity.ok(response);
 
