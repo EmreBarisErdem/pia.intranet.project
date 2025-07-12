@@ -31,10 +31,10 @@ public class Confession {
     @Column(name = "confession", nullable = false)
     private String confession;
 
-    @Column(name = "age_gap" , nullable = false)
+    @Column(name = "age_gap", nullable = false)
     private String ageGap;
 
-    @Column(name = "department" , nullable = false)
+    @Column(name = "department", nullable = false)
     private String department;
 
     @Column(name = "time_of_confession")

@@ -53,5 +53,4 @@ public class Document {
     private List<Department> departments;
 
 
-
 }

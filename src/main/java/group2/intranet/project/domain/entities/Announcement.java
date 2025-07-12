@@ -2,6 +2,7 @@ package group2.intranet.project.domain.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,7 @@ public class Announcement {
     private String content;
 
     @Column(name = "is_public", nullable = false)
-    private boolean publicAnnouncement ;
+    private boolean publicAnnouncement;
 
     @Column(name = "expires_at")
     private LocalDateTime expiresAt;
